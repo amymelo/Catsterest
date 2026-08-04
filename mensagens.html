@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>Catsterest - Inbox</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+  padding-bottom: 100px;
+}
+
+header {
+  padding: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  background: #0f0f0f;
+  z-index: 1000;
+}
+
+.inbox-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.section-label {
+  font-size: 14px;
+  color: #767676;
+  margin: 25px 0 10px 15px;
+  font-weight: bold;
+}
+
+/* --- ESTILO DOS ITENS --- */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.list-item:active { background: #1a1a1a; }
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.info { flex: 1; }
+.info h4 { margin: 0; font-size: 15px; font-weight: 600; }
+.info p { margin: 3px 0 0 0; font-size: 14px; color: #b2b2b2; line-height: 1.3; }
+
+.notif-preview {
+  width: 45px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* --- TELA DE CHAT --- */
+#chat-view {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #0f0f0f;
+  z-index: 3000;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #2b2b2b;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+}
+
+.bubble.bot { background: #2b2b2b; align-self: flex-start; border-bottom-left-radius: 4px; }
+.bubble.user { background: #e60023; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+.chat-input-area {
+  padding: 15px;
+  display: flex;
+  background: #0f0f0f;
+  gap: 10px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: none;
+  background: #2b2b2b;
+  color: white;
+  outline: none;
+}
+
+/* NAVBAR */
+.mobile-navbar {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 400px; height: 65px;
+  background-color: rgba(26, 26, 26, 0.95); backdrop-filter: blur(15px);
+  display: flex; justify-content: space-around; align-items: center;
+  border-radius: 35px; z-index: 2000;
+}
+
+.nav-item.active { color: white; }
+
+  .nav-item { 
+  color: #767676; 
+  font-size: 22px; 
+  cursor: pointer; 
+  display: flex; /* Adicione isso */
+  align-items: center; /* Adicione isso */
+  justify-content: center; /* Adicione isso */
+}
+
+.profile-pic-small { 
+  width: 28px; 
+  height: 28px; 
+  border-radius: 50%; 
+  overflow: hidden; 
+  background: #2b2b2b; /* Um fundo cinza caso a imagem demore */
+}
+
+.profile-pic-small img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block; /* Adicione isso */
+}
+  
+</style>
+</head>
+<body>
+
+<header>Caixa de Entrada</header>
+
+<div class="inbox-container">
+  
+  <p class="section-label">Mensagens</p>
+
+  <div class="list-item" onclick="abrirChat('Bento', 'https://cataas.com/cat?cute')">
+    <img src="https://cataas.com/cat?cute" class="avatar">
+    <div class="info">
+      <h4>Bento</h4>
+      <p>Miau miau miau? 🐾 • agora</p>
+    </div>
+  </div>
+
+  <div class="list-item" onclick="abrirChat('Pipoca', 'https://cataas.com/cat?white')">
+    <img src="https://cataas.com/cat?white" class="avatar">
+    <div class="info">
+      <h4>Pipoca</h4>
+      <p>Você: Mandou um sachê virtual • 3h</p>
+    </div>
+  </div>
+
+  <p class="section-label">Atualizações</p>
+
+  <div class="list-item"><img src="https://cataas.com/cat?1" class="avatar"><div class="info"><h4>Ideias de Gatos Fofos</h4><p>Baseado no seu histórico • 1h</p></div><img src="https://cataas.com/cat?11" class="notif-preview"></div>
+  <div class="list-item"><img src="https://cataas.com/cat?2" class="avatar"><div class="info"><h4>Gatitos salvou seu pin</h4><p>Novo salvamento na pasta 'Miau' • 2h</p></div><img src="https://cataas.com/cat?12" class="notif-preview"></div>
+  <div class="list-item"><img src="https://cataas.com/cat?3" class="avatar"><div class="info"><h4>Tendência para você</h4><p>Gatos com chapéu de festa estão em alta • 5h</p></div><img src="https://cataas.com/cat?13" class="notif-preview"></div>
+  <div class="list-item"><img src="https://cataas.com/cat?4" class="avatar"><div class="info"><h4>Luna curtiu seu comentário</h4><p>"Que gatinho mais lindo!" • 8h</p></div></div>
+  <div class="list-item"><img src="https://cataas.com/cat?5" class="avatar"><div class="info"><h4>Novo seguidor</h4><p>Mestre dos Sachês começou a te seguir • 12h</p></div></div>
+  <div class="list-item"><img src="https://cataas.com/cat?6" class="avatar"><div class="info"><h4>Pins que você pode gostar</h4><p>25 novas ideias para Gatos Exploradores • 1d</p></div><img src="https://cataas.com/cat?14" class="notif-preview"></div>
+  <div class="list-item"><img src="https://cataas.com/cat?7" class="avatar"><div class="info"><h4>Alerta de Fofura</h4><p>Confira os gatinhos mais votados da semana • 1d</p></div><img src="https://cataas.com/cat?15" class="notif-preview"></div>
+  <div class="list-item"><img src="https://cataas.com/cat?8" class="avatar"><div class="info"><h4>Lembrança de 1 ano atrás</h4><p>Veja o que você salvou em Maio de 2025 • 2d</p></div><img src="https://cataas.com/cat?16" class="notif-preview"></div>
+  <div class="list-item"><img src="https://cataas.com/cat?9" class="avatar"><div class="info"><h4>Sugestão de Pasta</h4><p>Crie uma pasta para 'Gatos Dorminhocos' • 3d</p></div></div>
+  <div class="list-item"><img src="https://cataas.com/cat?10" class="avatar"><div class="info"><h4>Atualização de Segurança</h4><p>Seu login foi realizado em um novo 'MiauPhone' • 4d</p></div></div>
+
+</div>
+
+<div id="chat-view">
+  <div class="chat-header">
+    <i class="fa-solid fa-chevron-left" onclick="fecharChat()" style="font-size: 20px; cursor: pointer;"></i>
+    <img id="chat-avatar" src="" class="avatar" style="width:35px; height:35px;">
+    <h4 id="chat-nome" style="margin:0">Nome</h4>
+  </div>
+  <div class="chat-messages" id="chat-box"></div>
+  <div class="chat-input-area">
+    <input type="text" id="msg-input" placeholder="Miau...">
+    <button onclick="enviarMensagem()" style="background:none; border:none; color:#e60023;"><i class="fa-solid fa-paper-plane" style="font-size: 20px;"></i></button>
+  </div>
+</div>
+
+<nav class="mobile-navbar">
+  <div class="nav-item" onclick="location.href='catsterest.html'"><i class="fa-solid fa-house"></i></div>
+  <div class="nav-item" onclick="location.href='busca.html'"><i class="fa-solid fa-magnifying-glass"></i></div>
+  <div class="nav-item"><i class="fa-solid fa-plus"></i></div>
+  <div class="nav-item active"><i class="fa-solid fa-comment-dots"></i></div>
+  
+  <div class="nav-item" onclick="location.href='perfil.html'">
+    <div class="profile-pic-small">
+      <img src="https://cataas.com/cat?width=30" alt="Perfil">
+    </div>
+  </div>
+</nav>
+
+
+<script>
+// 1. Precisamos declarar essas variáveis aqui fora para o código saber quem são
+const chatView = document.getElementById('chat-view');
+const chatBox = document.getElementById('chat-box');
+const msgInput = document.getElementById('msg-input');
+let gatoAtual = ""; 
+
+function abrirChat(nome, img) {
+    gatoAtual = nome; 
+    document.getElementById('chat-nome').innerText = nome;
+    document.getElementById('chat-avatar').src = img;
+    
+    // Mostra a tela de chat
+    chatView.style.display = 'flex';
+    
+    // CARREGA AS MENSAGENS SALVAS
+    chatBox.innerHTML = "";
+    let historico = JSON.parse(localStorage.getItem('chat_' + nome)) || [];
+    
+    if (historico.length === 0) {
+        chatBox.innerHTML = `<div class="bubble bot">Miau! Eu sou o ${nome}. Quer conversar?</div>`;
+    } else {
+        historico.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'bubble ' + msg.tipo;
+            div.innerText = msg.texto;
+            chatBox.appendChild(div);
+        });
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function fecharChat() { 
+    chatView.style.display = 'none'; 
+}
+
+function enviarMensagem() {
+    const texto = msgInput.value.trim();
+    if (!texto) return;
+
+    function processarMsg(txt, tipo) {
+        const div = document.createElement('div');
+        div.className = 'bubble ' + tipo;
+        div.innerText = txt;
+        chatBox.appendChild(div);
+        
+        let historico = JSON.parse(localStorage.getItem('chat_' + gatoAtual)) || [];
+        historico.push({ texto: txt, tipo: tipo });
+        localStorage.setItem('chat_' + gatoAtual, JSON.stringify(historico));
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    processarMsg(texto, 'user');
+    msgInput.value = "";
+
+    setTimeout(() => {
+        // Removi o caractere invisível que estava travando aqui embaixo!
+        const respostas = ["Miau!", "Miau miau!", "Miau?", "MIAAAU!", "Miau miau miau...", "Mew!", "Meow.", "Meow?", "Prrrrrrr...", "Prrr? miau!", "Ekekekekek! 🐦", "Hiss! 😾", "Miau (estou com sono)", "Miau miau miau miau!", "Miau! ✨", "🐾", "🐈", "Lambida na mão", "Te cutuca com a pata", "Derruba um copo virtual", "Ignora e lambe a pata", "Boceja", "Se espreguiça", "Olha fixamente para o nada", "Caça o ponto vermelho", "Sobe no teclado", "Dorme no seu colo", "Pede sachê", "Afia as unhas no sofá", "Ronrona muito alto", "Miau (cadê o petisco?)", "Miau (me dá atenção!)", "Miau (quero sair)", "Miau (quero entrar)", "Miau (mudei de ideia, quero sair de novo)", "Miau miau? 🐟", "Mew mew!", "Rawr! (sou um leão)", "Miau... zzzzz", "Miau! (vi uma barata)", "Miau (estou te julgando)", "Miau (você é legal)", "Miau (humanos são estranhos)", "Miau? olha para o pote vazio", "Prrrrt!", "Mraow!", "Mrrrrph.", "Miau (não toque na minha barriga)", "Miau (pode coçar minha orelha)", "Miau! (peguei uma mosca)", "Miau miau miau... miau!", "Fica com as pupilas dilatadas", "Balança o rabo devagar", "Dá uma cabeçada carinhosa", "Enrola no seu pé", "Pula na mesa", "Brinca com uma bolinha de papel", "Olha para o passarinho na janela", "Miau (o dia está lindo)", "Miau (estou comendo?)", "Miau! (que susto!)", "Miau? (onde você estava?)", "Miau (te trouxe uma folha seca)", "Miau (sou o dono da casa)", "Miau (limpe minha caixa de areia)", "Miau... suspira", "Mew! pula no seu ombro", "Miau (meu pelo está macio)", "Miau (estou com fome de novo)", "Miau (o que você está comendo?)", "Miau (quero um pouco disso)", "Miau! (esqueci como mia)", "Miau miau! 🧶", "Prrr... miau miau.", "Miau? cheira seu rosto", "Faz pãozinho no cobertor", "Esconde o rosto com as patas", "Ataca o próprio rabo", "Fica parado igual uma estátua", "Miau! (estou pronto para a soneca)", "Miau (me deixa em paz)", "Miau (brinca comigo?)", "Miau! (achei um fio solto)", "Miau? (você disse passeio?)", "Miau (não sou um cachorro)", "Miau (sou um príncipe/princesa)", "Miau... (saudades do sol)", "Miau! (pulei alto né?)", "Miau (meu nome é lindo)", "Miau? (cadê todo mundo?)", "Miau (fui eu que quebrei o vaso)", "Miau (não me arrependo de nada)", "Miau! (sou muito fofo)", "Miau miau... ronron", "Miau? (posso dormir aqui?)", "Miau (estou de olho em você)", "Miau! (uhuul!)", "Miau... (cansei de brincar)", "Miau (quero carinho na nuca)", "Miau (você é meu humano favorito)"];
+        const resp = respostas[Math.floor(Math.random() * respostas.length)];
+        processarMsg(resp, 'bot');
+    }, 800);
+}
+
+  msgInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarMensagem(); });
+</script>
+
+</body>
+</html>

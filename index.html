@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<title>Catsterest - Meu Feed</title>
+
+<style>
+/* --- ESTILOS GERAIS --- */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+  margin-top: 25px;
+  padding-bottom: 120px;
+}
+
+header {
+  padding: 20px;
+  text-align: center;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+/* --- TOPO / CATEGORIAS --- */
+.Topo {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 8px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  position: sticky;
+  top: 0;
+  background: #0f0f0f;
+  z-index: 1500;
+}
+
+.Topo span {
+  font-size: 16px;
+  font-weight: 900;
+  color: #767676;
+  cursor: pointer;
+  padding-bottom: 5px;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.Topo span.active { color: #ffffff; }
+
+.Topo span.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+}
+
+/* --- CONTAINER MASONRY PINTEREST (2 COLUNAS FIXAS) --- */
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px;
+  max-width: 800px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- CARDS (SEM CORTES) --- */
+.card {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1a1a1a;
+  height: fit-content;
+}
+
+.card img {
+  width: 100%;
+  height: auto; /* Mantém a proporção real da foto */
+  display: block;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* --- NAVBAR MOBILE --- */
+.mobile-navbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  height: 65px;
+  background-color: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 35px;
+  z-index: 2000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.nav-item {
+  color: #767676;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.nav-item.active { color: white; }
+
+.profile-pic-small {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-pic-small img { width: 100%; height: 100%; object-fit: cover; }
+
+/* RESPONSIVIDADE */
+@media (max-width: 500px) { .container { max-width: 100%; padding: 10px; gap: 10px; } .coluna { gap: 10px; } }
+</style>
+</head>
+
+<body>
+
+<header>Catsterest 𑄝</header>
+  
+<div class="Topo">
+  <span class="active">Pra Você</span>
+  <span class="inactive">Gatos Fofos</span>
+  <span class="inactive">Gatinhos</span>
+  <span class="inactive">Cats</span>
+</div>
+
+<div class="container" id="container">
+  <div class="coluna" id="col1"></div>
+  <div class="coluna" id="col2"></div>
+</div>
+
+<nav class="mobile-navbar">
+  <div class="nav-item active"><i class="fa-solid fa-house"></i></div>
+  <div class="nav-item" onclick="location.href='busca.html'"><i class="fa-solid fa-magnifying-glass"></i></div>
+  <div class="nav-item"><i class="fa-solid fa-plus"></i></div>
+  <div class="nav-item" onclick="location.href='mensagens.html'"><i class="fa-solid fa-comment-dots"></i></div>
+  <div class="nav-item" onclick="location.href='perfil.html'">
+    <div class="profile-pic-small">
+      <img src="https://cataas.com/cat?width=30" alt="Perfil">
+    </div>
+  </div>
+</nav>
+
+<script>
+let aguardando = false;
+let proximaColuna = 0; // Contador para fazer o rodízio de colunas
+
+// Começa a baixar a imagem IMEDIATAMENTE (em paralelo com as outras).
+// A Promise só "libera" quando ela estiver pronta (carregada, com erro,
+// ou depois de 6s de trava de segurança pra nunca ficar preso).
+function preloadImage(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    let resolvido = false;
+    const finalizar = () => {
+      if (resolvido) return;
+      resolvido = true;
+      resolve(img);
+    };
+    img.onload = finalizar;
+    img.onerror = finalizar;
+    img.src = url;
+    setTimeout(finalizar, 6000);
+  });
+}
+
+function anexarCard(img) {
+  const colunas = [
+    document.getElementById("col1"),
+    document.getElementById("col2")
+  ];
+
+  if (proximaColuna >= colunas.length) proximaColuna = 0;
+  const colunaAlvo = colunas[proximaColuna];
+  proximaColuna++;
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.appendChild(img);
+  colunaAlvo.appendChild(card);
+  setTimeout(() => { img.style.opacity = 1; }, 50);
+}
+
+async function carregarLote(qtd) {
+  // 1) Dispara TODOS os downloads ao mesmo tempo (isso é o que deixa rápido)
+  const promises = [];
+  for (let i = 0; i < qtd; i++) {
+    promises.push(preloadImage(`https://cataas.com/cat?width=350&nocache=${Math.random()}`));
+  }
+
+  // 2) Mas insere na tela em ORDEM garantida (0, 1, 2...) — se a imagem 3
+  // terminar antes da 1, ela espera a vez dela mesmo assim. Como quase
+  // todas chegam juntas (paralelo), na prática isso não trava nada.
+  for (let i = 0; i < qtd; i++) {
+    const img = await promises[i];
+    anexarCard(img);
+  }
+}
+
+// Carregamento inicial
+carregarLote(12);
+
+// SCROLL INFINITO (Gatilho de 2000px)
+window.addEventListener('scroll', () => {
+  const gatilho = 2000; 
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - gatilho) {
+    if (!aguardando) {
+      aguardando = true;
+      carregarLote(8).then(() => { aguardando = false; });
+    }
+  }
+});
+</script>
+
+</body>
+</html>

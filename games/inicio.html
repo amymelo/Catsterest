@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Miau Arcade | Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* CONTAINER DO MENU */
+        #main-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .hub-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hub-title {
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            background: linear-gradient(#fff, #444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+
+        .repo-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #F4893F;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: monospace;
+            border: 1px solid #F4893F;
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+        .repo-link:hover {
+            background: #F4893F;
+            color: #000;
+        }
+
+        /* GRID DE JOGOS */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .game-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 24px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: #F4893F;
+            box-shadow: 0 10px 30px rgba(255, 179, 186, 0.1);
+        }
+
+        .game-card i { font-size: 2.5rem; color: #F4893F; margin-bottom: 15px; }
+        .game-card span { font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+
+        /* RODAPÉ COM CRÉDITOS */
+        footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #1a1a1a;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        footer b { color: #888; }
+        
+        .social-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-links a { color: #555; font-size: 1.2rem; transition: 0.3s; }
+        .social-links a:hover { color: #fff; }
+
+        /* OVERLAY DO JOGO */
+        #game-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+        }
+
+        .btn-exit {
+            position: absolute;
+            top: 20px; left: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-weight: bold;
+            z-index: 10000;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
+
+    </style>
+</head>
+<body>
+
+    <div id="main-menu">
+        <div class="hub-header">
+            <h1 class="hub-title">MIAU ARCADE</h1>
+            <a href="https://github.com/amymelo/miau-arcade" target="_blank" class="repo-link">
+                <i class="fa-brands fa-github"></i> github.com/miau-arcade
+            </a>
+        </div>
+        
+        <div class="game-grid">
+            <div class="game-card" onclick="play('catrunner.html')">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Runner</span>
+            </div>
+            <div class="game-card" onclick="play('MicMacMiau.html')">
+                <i class="fa-solid fa-chess-board"></i>
+                <span>TicTacMiau</span>
+            </div>
+            <div class="game-card" onclick="play('miaucatch.html')">
+                <i class="fa-solid fa-shrimp"></i>
+                <span>Catch</span>
+            </div>
+            <div class="game-card" onclick="play('miaumemorie.html')">
+                <i class="fa-solid fa-brain"></i>
+                <span>Memory</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Desenvolvido por <b>Rayanne Melo</b></p>
+        <div class="social-links">
+            <a href="https://github.com/amymelo" target="_blank"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/rayanne-melo-b4a596402" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+        <p style="margin-top: 10px; font-size: 0.7rem; opacity: 0.5;">© 2026 Miau Arcade. Todos os direitos reservados aos gatinhos.</p>
+    </footer>
+
+    <div id="game-overlay">
+        <button class="btn-exit" onclick="stopGame()"><i class="fa-solid fa-house"></i> MENU</button>
+        <iframe id="game-frame" src=""></iframe>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('game-overlay');
+        const frame = document.getElementById('game-frame');
+
+        function play(page) {
+            overlay.style.display = 'block';
+            frame.src = page;
+        }
+
+        function stopGame() {
+            overlay.style.display = 'none';
+            frame.src = "";
+        }
+    </script>
+</body>
+</html>

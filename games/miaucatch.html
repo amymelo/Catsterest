@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Miau Catch - Record Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; touch-action: none; }
+        
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            padding: 15px;
+            padding-top: 60px
+        }
+
+        .topo-title {
+            font-size: 1.8rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(#fff, #444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .high-score-label {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        #game-area {
+            width: 100%;
+            max-width: 500px;
+            flex-grow: 1;
+            background: #111;
+            position: relative;
+            border-radius: 24px;
+            border: 2px solid #333;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            cursor: crosshair;
+        }
+
+        #gato {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 50px;
+            color: #F4893F;
+            z-index: 10;
+            pointer-events: none;
+            transition: transform 0.1s;
+        }
+
+        .item { 
+            position: absolute;
+            font-size: 30px; 
+            top: -50px; 
+            transition: opacity 0.2s; }
+
+        .hud {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .lives { 
+            color: #ff4d4d;
+            letter-spacing: 2px;
+        }
+        #score-val { 
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 15px 45px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        .game-msg { 
+            color: #ff4d4d;
+            font-size: 0.8rem;
+            margin-top: 10px; 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="topo-title">Miau Catch</h1>
+    <div class="high-score-label">BEST: <span id="hi-val">00000</span></div>
+
+    <div class="hud">
+        <div id="score">SCORE: <span id="score-val">0</span></div>
+        <div class="lives" id="lives">♥︎♥︎♥︎</div>
+    </div>
+
+    <div id="game-area">
+        <div id="gato"><i class="fa-solid fa-cat"></i></div>
+        
+        <div id="overlay">
+            <h2 id="msg-title" style="font-size: 2.5rem; color: #fff;">GAME OVER</h2>
+            <p id="final-score" style="font-size: 1.2rem; color: #777; margin-top: 10px;"></p>
+            <p id="new-record" style="color: #ffb3ba; font-weight: bold; margin-top: 5px; display: none;">NOVO RECORDE! 🏆</p>
+            <button onclick="startGame()">RECOMEÇAR</button>
+        </div>
+    </div>
+
+    <p class="game-msg">Não deixe os sachês caírem!</p>
+
+    <script>
+        const gato = document.getElementById('gato');
+        const gameArea = document.getElementById('game-area');
+        const scoreDisplay = document.getElementById('score-val');
+        const hiDisplay = document.getElementById('hi-val');
+        const livesDisplay = document.getElementById('lives');
+        const overlay = document.getElementById('overlay');
+        const finalScoreText = document.getElementById('final-score');
+        const recordMsg = document.getElementById('new-record');
+
+        let score = 0;
+        let lives = 3;
+        let gameActive = false;
+        let highscore = localStorage.getItem("miau_catch_hi") || 0;
+
+        hiDisplay.innerText = highscore.toString().padStart(5, '0');
+
+        function startGame() {
+            score = 0;
+            lives = 3;
+            gameActive = true;
+            scoreDisplay.innerText = "0";
+            livesDisplay.innerText = "♥︎♥︎♥︎";
+            overlay.style.display = 'none';
+            recordMsg.style.display = 'none';
+            document.querySelectorAll('.item').forEach(i => i.remove());
+            spawnItem();
+        }
+
+        // CONTROLE UNIFICADO: MOUSE E DEDO
+        const moveHandler = (e) => {
+            if(!gameActive) return;
+            const rect = gameArea.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let x = ((clientX - rect.left) / rect.width) * 100;
+            
+            if(x < 6) x = 6;
+            if(x > 94) x = 94;
+            
+            gato.style.left = x + '%';
+        };
+
+        gameArea.addEventListener('mousemove', moveHandler);
+        gameArea.addEventListener('touchmove', moveHandler);
+
+        function spawnItem() {
+            if(!gameActive) return;
+
+            const item = document.createElement('div');
+            item.classList.add('item');
+            
+            const isBad = Math.random() > 0.8; // 20% bomba
+            if(isBad) {
+                item.innerHTML = '<i class="fa-solid fa-bomb" style="color: #ff4d4d"></i>';
+                item.dataset.type = 'bad';
+            } else {
+                const icons = ['fa-fish', 'fa-shrimp', 'fa-cookie-bite', 'fa-bone'];
+                item.innerHTML = `<i class="fa-solid ${icons[Math.floor(Math.random()*icons.length)]}" style="color: #F4893F"></i>`;
+                item.dataset.type = 'good';
+            }
+
+            item.style.left = Math.random() * 85 + 7 + '%';
+            gameArea.appendChild(item);
+
+            let itemY = -50;
+            let speed = 4 + (score / 150);
+
+            function fall() {
+                if(!gameActive) { item.remove(); return; }
+                itemY += speed;
+                item.style.top = itemY + 'px';
+
+                const pRect = gato.getBoundingClientRect();
+                const iRect = item.getBoundingClientRect();
+
+                // Colisão
+                if (iRect.bottom > pRect.top && iRect.top < pRect.bottom && iRect.right > pRect.left && iRect.left < pRect.right) {
+                    if(item.dataset.type === 'good') {
+                        score += 10;
+                        scoreDisplay.innerText = score;
+                    } else {
+                        takeDamage("bomb");
+                    }
+                    item.remove();
+                    return;
+                }
+
+                // Se sair da tela
+                if(itemY > gameArea.clientHeight) {
+                    if(item.dataset.type === 'good') {
+                        takeDamage("miss"); // Perde vida se não pegar o sachê
+                    }
+                    item.remove();
+                } else {
+                    requestAnimationFrame(fall);
+                }
+            }
+            requestAnimationFrame(fall);
+
+            let nextSpawn = Math.max(400, 1200 - (score/1.5));
+            setTimeout(spawnItem, nextSpawn);
+        }
+
+        function takeDamage(reason) {
+            lives--;
+            livesDisplay.innerText = "♥︎".repeat(lives);
+            
+            //borda visual de dano vermelho
+            gameArea.style.boxShadow = "inset 0 0 50px rgba(255, 77, 77, 0.5)";
+            setTimeout(() => gameArea.style.boxShadow = "0 0 30px rgba(0,0,0,0.5)", 300);
+
+            if(lives <= 0) endGame();
+        }
+
+        function endGame() {
+            gameActive = false;
+            overlay.style.display = 'flex';
+            finalScoreText.innerText = `Você coletou ${score} itens!`;
+
+            if (score > highscore) {
+                highscore = score;
+                localStorage.setItem("miau_catch_hi", highscore);
+                hiDisplay.innerText = highscore.toString().padStart(5, '0');
+                recordMsg.style.display = 'block';
+            }
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

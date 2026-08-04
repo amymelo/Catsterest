@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<title>Catsterest - Explorar</title>
+
+<style>
+/* --- ESTILOS GERAIS --- */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+  padding-bottom: 100px;
+}
+
+/* --- CABEÇALHO DE PESQUISA ESTILO PINTEREST --- */
+.search-header {
+  padding: 20px 15px;
+  background: #0f0f0f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 2500;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+}
+
+.search-container i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #767676;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border-radius: 25px;
+  border: none;
+  background: #2b2b2b;
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  transition: background 0.3s;
+}
+
+.search-container input:focus {
+  background: #3a3a3a;
+}
+
+/* --- CARDS DE CATEGORIA --- */
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0 15px 0;
+}
+
+.categories-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cat-card {
+  height: 100px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.cat-card:active { transform: scale(0.95); }
+
+.cat-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  filter: brightness(0.6);
+}
+
+.cat-card span {
+  position: relative;
+  z-index: 1;
+  font-weight: bold;
+  font-size: 16px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* --- MODAL DO GATO FISCAL --- */
+#modal-alerta {
+  display: none; /* Mantido como none para o JS controlar */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Força a largura da viewport */
+  height: 100vh; /* Força a altura da viewport */
+  background: rgba(0,0,0,0.95);
+  z-index: 4000;
+  
+  /* Flexbox para centralizar */
+  display: none; /* Troque para 'flex' no JS */
+  justify-content: center;
+  align-items: center;
+}
+
+
+.modal-content {
+  background: #1a1a1a;
+  padding: 40px 20px;
+  border-radius: 30px;
+  max-width: 350px;
+  width: 85%; /* Um pouco menor para garantir respiro em telas pequenas */
+  border: 2px solid #e60023;
+  box-shadow: 0 0 30px rgba(230, 0, 35, 0.3);
+  
+  /* Garante que o conteúdo interno também se alinhe ao centro */
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  box-sizing: border-box; 
+}
+
+
+.modal-content img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.modal-content p {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1.4;
+  margin-bottom: 25px;
+}
+
+.btn-fechar {
+  background: #e60023;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-fechar:hover { background: #ad001a; }
+
+/* --- NAVBAR MOBILE --- */
+.mobile-navbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  height: 65px;
+  background-color: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(15px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 35px;
+  z-index: 2000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.nav-item { color: #767676; font-size: 22px; cursor: pointer; }
+.nav-item.active { color: white; }
+.profile-pic-small { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; }
+.profile-pic-small img { width: 100%; height: 100%; object-fit: cover; }
+</style>
+</head>
+<body>
+
+<div class="search-header">
+  <div class="search-container">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="campo-busca" placeholder="Procurar gatinhos...">
+  </div>
+</div>
+
+<p class="section-title">Ideias para você</p>
+
+<div class="categories-container">
+  <div class="cat-card"><img src="https://cataas.com/cat?1"><span>Gatos Pretos</span></div>
+  <div class="cat-card"><img src="https://cataas.com/cat?2"><span>Kittens</span></div>
+  <div class="cat-card"><img src="https://cataas.com/cat?3"><span>Funny Cats</span></div>
+  <div class="cat-card"><img src="https://cataas.com/cat?4"><span>Gatos Fofos</span></div>
+  <div class="cat-card"><img src="https://cataas.com/cat?5"><span>Cat Memes</span></div>
+  <div class="cat-card"><img src="https://cataas.com/cat?6"><span>Neko 🐈</span></div>
+</div>
+
+<div id="modal-alerta">
+  <div class="modal-content">
+    <img src="imagens/nocatnopass.png" alt="Gato bravo">
+    <p>Ei! Aqui é o Catsterest.<br>Só aceitamos gatinhos aqui!"</p>
+    <button class="btn-fechar" onclick="fecharModal()">Desculpa, miau!</button>
+  </div>
+</div>
+
+<nav class="mobile-navbar">
+  <div class="nav-item" onclick="location.href='catsterest.html'"><i class="fa-solid fa-house"></i></div>
+  <div class="nav-item active"><i class="fa-solid fa-magnifying-glass"></i></div>
+  <div class="nav-item"><i class="fa-solid fa-plus"></i></div>
+  <div class="nav-item" onclick="location.href='mensagens.html'"><i class="fa-solid fa-comment-dots"></i></div>
+  <div class="nav-item" onclick="location.href='perfil.html'">
+    <div class="profile-pic-small">
+      <img src="https://cataas.com/cat?width=30" alt="Perfil">
+    </div>
+  </div>
+</nav>
+
+<script>
+const inputBusca = document.getElementById('campo-busca');
+const modal = document.getElementById('modal-alerta');
+
+// DICIONÁRIO DE GATOS (Pode pesquisar qualquer um desses que o fiscal libera)
+const termosPermitidos = [
+    'gato', 'gatinho', 'gata', 'gatinha', 'cat', 'cats', 'kitten', 'kittens', 
+    'neko', 'kitty', 'miau', 'meow', 'chat', 'felino', 'pussycat', 'gatto', 
+    'katze', 'michi', 'gatito', 'kot', 'kocka', 'kissa'
+];
+
+inputBusca.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        const buscaUsuario = inputBusca.value.toLowerCase().trim();
+        
+        // Verifica se a palavra digitada contém algum dos termos permitidos
+        const eGato = termosPermitidos.some(termo => buscaUsuario.includes(termo));
+
+        if (buscaUsuario !== "" && !eGato) {
+            // Se não for gato, o fiscal aparece
+            modal.style.display = 'flex';
+        } else if (buscaUsuario !== "") {
+            // SE FOR GATO: Redireciona para a página de resultados
+            // Passamos o que ele digitou depois do ?q= para a outra página ler
+            window.location.href = `resultado.html?q=${encodeURIComponent(buscaUsuario)}`;
+        }
+    }
+});
+
+
+function fecharModal() {
+    modal.style.display = 'none';
+    inputBusca.value = '';
+    inputBusca.focus();
+}
+</script>
+
+</body>
+</html>

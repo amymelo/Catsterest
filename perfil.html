@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<title>Catsterest - Meu Perfil</title>
+
+<style>
+/* --- ESTILOS TEMA DARK --- */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #0f0f0f;
+  color: white;
+  padding-bottom: 120px;
+}
+
+.header-icons {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 20px 10px;
+  gap: 20px;
+  font-size: 20px;
+}
+
+/* --- INFO DO PERFIL --- */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 15px;
+  border: 3px solid #1a1a1a;
+}
+
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.profile-info h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.profile-info p {
+  color: #767676;
+  font-size: 14px;
+  margin: 5px 0 15px;
+}
+
+/* --- BOTÕES DE AÇÃO --- */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.btn {
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-gray { background: #262626; color: white; }
+.btn-red { background: #e60023; color: white; }
+
+/* --- SEÇÃO DE REPOSITÓRIO / LINKS --- */
+.repo-section {
+  padding: 0 15px;
+}
+
+.repo-card {
+  background: #1a1a1a;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #333;
+}
+
+.repo-card h3 { margin: 0; display: flex; align-items: center; gap: 10px; }
+.repo-card p { font-size: 14px; color: #b2b2b2; margin: 0; line-height: 1.5; }
+
+.stats {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: #767676;
+}
+
+/* --- NAVBAR MOBILE --- */
+.mobile-navbar {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 400px; height: 65px; background-color: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px); display: flex; justify-content: space-around;
+  align-items: center; border-radius: 35px; z-index: 2000;
+}
+
+.nav-item { color: #767676; font-size: 22px; cursor: pointer; }
+.nav-item.active { color: white; }
+
+.profile-pic-small { 
+  width: 28px; height: 28px; border-radius: 50%; 
+  overflow: hidden; border: 2px solid white;
+}
+.profile-pic-small img { width: 100%; height: 100%; object-fit: cover; }
+</style>
+</head>
+<body>
+
+<div class="header-icons">
+  <i class="fa-solid fa-share-nodes"></i>
+  <i class="fa-solid fa-ellipsis"></i>
+</div>
+
+<div class="profile-info">
+  <div class="profile-avatar">
+    <img src="https://cataas.com/cat?width=200" alt="Rayanne Melo">
+  </div>
+  <h1>Rayanne Melo</h1>
+  <p>@amymelo • Ciência da Computação</p>
+  
+  <div class="action-buttons">
+    <a href="https://github.com/amymelo" class="btn btn-gray">
+      <i class="fa-brands fa-github"></i> GitHub
+    </a>
+    <button class="btn btn-red">Compartilhar</button>
+  </div>
+</div>
+
+<div class="repo-section">
+  <div class="repo-card">
+    <h3><i class="fa-solid fa-code-branch"></i> Projeto Catsterest</h3>
+    <p>Projeto focado em UI/UX inspirado no Pinterest, desenvolvido para fins de estudo em Front-end e manipulação de APIs.</p>
+    <div class="stats">
+      <span><i class="fa-solid fa-circle" style="color: #f1e05a;"></i> JavaScript</span>
+      <span><i class="fa-solid fa-star"></i> 10</span>
+      <span><i class="fa-solid fa-code-fork"></i> 5</span>
+    </div>
+    <a href="URL-DO-SEU-REPOSITORIO" style="color: #e60023; font-weight: bold; text-decoration: none; font-size: 13px; margin-top: 5px;">
+      Ver Repositório no GitHub →
+    </a>
+  </div>
+</div>
+
+<nav class="mobile-navbar">
+  <div class="nav-item" onclick="location.href='catsterest.html'"><i class="fa-solid fa-house"></i></div>
+  <div class="nav-item" onclick="location.href='busca.html'"><i class="fa-solid fa-magnifying-glass"></i></div>
+  <div class="nav-item"><i class="fa-solid fa-plus"></i></div>
+  <div class="nav-item" onclick="location.href='mensagens.html'"><i class="fa-solid fa-comment-dots"></i></div>
+  <div class="nav-item active">
+    <div class="profile-pic-small">
+      <img src="https://cataas.com/cat?width=30" alt="Perfil">
+    </div>
+  </div>
+</nav>
+
+</body>
+</html>
